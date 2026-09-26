@@ -1,0 +1,62 @@
+[
+    {
+        "id_venta": "V001",
+        "usuario_id": "1500123456",
+        "usuario_nombre": "Edisson Vera",
+        "producto_codigo": "P001",
+        "producto_nombre": "Hamburguesa Doble Carne",
+        "cantidad": 2,
+        "total": 13.0,
+        "fecha": "2026-09-22 14:30:00"
+    },
+    {
+        "id_venta": "V002",
+        "usuario_id": "1500123456",
+        "usuario_nombre": "Edisson Vera",
+        "producto_codigo": "P002",
+        "producto_nombre": "Pizza Familiar Pepperoni",
+        "cantidad": 3,
+        "total": 36.0,
+        "fecha": "2026-09-26 11:31:39"
+    },
+    {
+        "id_venta": "V003",
+        "usuario_id": "admin",
+        "usuario_nombre": "Administrador Principal",
+        "producto_codigo": "P003",
+        "producto_nombre": "Jugo Natural de Naranja",
+        "cantidad": 4,
+        "total": 10.0,
+        "fecha": "2026-09-26 11:34:03"
+    },
+    {
+        "id_venta": "V004",
+        "usuario_id": "admin",
+        "usuario_nombre": "Administrador Principal",
+        "producto_codigo": "p004",
+        "producto_nombre": "Jugo natural de piña",
+        "cantidad": 2,
+        "total": 80.0,
+        "fecha": "2026-09-26 11:35:57"
+    },
+    {
+        "id_venta": "V005",
+        "usuario_id": "admin",
+        "usuario_nombre": "Administrador Principal",
+        "producto_codigo": "g9854",
+        "producto_nombre": "Costilla ahumada",
+        "cantidad": 4,
+        "total": 20.0,
+        "fecha": "2026-09-26 11:37:00"
+    },
+    {
+        "id_venta": "V006",
+        "usuario_id": "admin",
+        "usuario_nombre": "Administrador Principal",
+        "producto_codigo": "p004",
+        "producto_nombre": "jugo natural de piña",
+        "cantidad": 1,
+        "total": 2.0,
+        "fecha": "2026-09-26 11:38:43"
+    }
+]

@@ -1,0 +1,14 @@
+[
+    {
+        "identificacion": "admin",
+        "nombre": "Administrador Principal",
+        "correo": "admin@restaurante.com",
+        "clave": "admin123"
+    },
+    {
+        "identificacion": "2200298624",
+        "nombre": "Edisson Vera",
+        "correo": "edisson.vera@gmail.com",
+        "clave": "1234"
+    }
+]

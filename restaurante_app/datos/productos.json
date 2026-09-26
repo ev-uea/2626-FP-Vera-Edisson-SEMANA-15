@@ -1,0 +1,37 @@
+[
+    {
+        "codigo": "P001",
+        "nombre": "Hamburguesa Doble Carne",
+        "categoria": "Comida Rápida",
+        "precio": 6.5,
+        "stock": 15
+    },
+    {
+        "codigo": "P002",
+        "nombre": "Pizza Familiar Pepperoni",
+        "categoria": "Comida Rápida",
+        "precio": 12.0,
+        "stock": 5
+    },
+    {
+        "codigo": "P003",
+        "nombre": "Jugo Natural de Naranja",
+        "categoria": "Bebidas",
+        "precio": 2.5,
+        "stock": 21
+    },
+    {
+        "codigo": "p004",
+        "nombre": "jugo natural de piña",
+        "categoria": "Bebidas",
+        "precio": 2.0,
+        "stock": 29
+    },
+    {
+        "codigo": "p005",
+        "nombre": "Costilla ahumada",
+        "categoria": "Comida Rápida",
+        "precio": 5.0,
+        "stock": 30
+    }
+]
