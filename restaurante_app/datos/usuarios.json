@@ -1,14 +1,23 @@
 [
     {
-        "identificacion": "admin",
-        "nombre": "Administrador Principal",
+        "identificacion": "01",
+        "nombre": "Administrador",
         "correo": "admin@restaurante.com",
-        "clave": "admin123"
+        "clave": "admin123",
+        "rol": "Administrador"
     },
     {
-        "identificacion": "2200298624",
+        "identificacion": "02",
         "nombre": "Edisson Vera",
         "correo": "edisson.vera@gmail.com",
-        "clave": "1234"
+        "clave": "1234",
+        "rol": "Administrador"
+    },
+    {
+        "identificacion": "30",
+        "nombre": "Jose",
+        "correo": "jose321@gmail.com",
+        "clave": "54321",
+        "rol": "Empleado"
     }
 ]

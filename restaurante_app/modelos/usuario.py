@@ -1,25 +1,30 @@
 class Usuario:
-    """Entidad que representa a los usuarios y personal del sistema del restaurante."""
+    """Representa a un usuario registrado en el sistema del restaurante."""
 
-    def __init__(self, identificacion: str, nombre: str, correo: str, clave: str) -> None:
-        self.identificacion: str = identificacion.strip()
-        self.nombre: str = nombre.strip()
-        self.correo: str = correo.strip()
-        self.clave: str = clave.strip()
+    def __init__(self, identificacion: str, nombre: str, correo: str, clave: str, rol: str = "Cliente") -> None:
+        self.identificacion: str = identificacion
+        self.nombre: str = nombre
+        self.correo: str = correo
+        self.clave: str = clave
+        self.rol: str = rol
 
-    def a_diccionario(self) -> dict:
+    def to_dict(self) -> dict:
+        """Convierte el objeto Usuario en un diccionario para la persistencia JSON."""
         return {
             "identificacion": self.identificacion,
             "nombre": self.nombre,
             "correo": self.correo,
-            "clave": self.clave
+            "clave": self.clave,
+            "rol": self.rol
         }
 
-    @staticmethod
-    def desde_diccionario(datos: dict) -> "Usuario":
-        return Usuario(
-            identificacion=str(datos["identificacion"]),
-            nombre=str(datos["nombre"]),
-            correo=str(datos["correo"]),
-            clave=str(datos["clave"])
+    @classmethod
+    def from_dict(cls, data: dict) -> "Usuario":
+        """Crea una instancia de Usuario a partir de un diccionario."""
+        return cls(
+            identificacion=data.get("identificacion", ""),
+            nombre=data.get("nombre", ""),
+            correo=data.get("correo", ""),
+            clave=data.get("clave", ""),
+            rol=data.get("rol", "Cliente")
         )

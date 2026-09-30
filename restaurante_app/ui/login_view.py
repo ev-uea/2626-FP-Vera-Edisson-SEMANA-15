@@ -1,69 +1,80 @@
 import os
 import tkinter as tk
 from tkinter import ttk, messagebox
-from servicios.restaurante_servicio import RestauranteServicio
 
 
 class LoginView(ttk.Frame):
-    """Vista del inicio de sesión con logo adaptativo y validación delegada a RestauranteServicio."""
+    """Vista del formulario de inicio de sesión."""
 
-    def __init__(self, parent: tk.Widget, restaurante_servicio: RestauranteServicio, on_login_success: callable,
-                 assets_dir: str) -> None:
-        super().__init__(parent, padding=20)
-        self.restaurante_servicio: RestauranteServicio = restaurante_servicio
-        self.on_login_success: callable = on_login_success
-        self.assets_dir: str = assets_dir
+    def __init__(self, parent, on_login_success, assets_dir="assets", restaurante_servicio=None, servicio=None, *args, **kwargs) -> None:
+        # Extraer parámetros personalizados para evitar TclError con super().__init__()
+        if "restaurante_servicio" in kwargs:
+            restaurante_servicio = kwargs.pop("restaurante_servicio")
+        if "servicio" in kwargs:
+            servicio = kwargs.pop("servicio")
 
-        self.logo_img = None
-        self._cargar_logo()
+        super().__init__(parent, *args, **kwargs)
+        self.parent = parent
+        self.on_login_success = on_login_success
+        self.assets_dir = assets_dir
+        self.servicio = servicio or restaurante_servicio
+
         self._crear_interfaz()
 
-    def _cargar_logo(self) -> None:
-        """Calcula dinámicamente la reducción para que el logo mida ~80px independientemente del tamaño original."""
+    def _crear_interfaz(self) -> None:
+        frame_centrado = ttk.Frame(self, padding="20")
+        frame_centrado.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+
+        # Cargar logo en PNG usando tk.PhotoImage y redimensionar con subsample
         ruta_logo = os.path.join(self.assets_dir, "logo.png")
         if os.path.exists(ruta_logo):
             try:
-                img_raw = tk.PhotoImage(file=ruta_logo)
-                ancho_original = img_raw.width()
-
-                # Calcular el divisor necesario para escalar a un tamaño objetivo de 80px
-                tamano_objetivo = 80
-                factor = max(1, ancho_original // tamano_objetivo)
-
-                self.logo_img = img_raw.subsample(factor, factor)
+                img_original = tk.PhotoImage(file=ruta_logo)
+                # Escala ajustada (divide entre 5 el tamaño original del logo)
+                self.logo_img = img_original.subsample(5, 5)
+                lbl_logo = ttk.Label(frame_centrado, image=self.logo_img)
+                lbl_logo.pack(pady=(0, 10))
             except Exception:
-                self.logo_img = None
+                pass
 
-    def _crear_interfaz(self) -> None:
-        frame_box = ttk.LabelFrame(self, text=" Acceso al Sistema ", padding=20)
-        frame_box.place(relx=0.5, rely=0.5, anchor="center")
+        ttk.Label(frame_centrado, text="Iniciar Sesión", font=("Helvetica", 16, "bold")).pack(pady=10)
 
-        if self.logo_img:
-            lbl_logo = ttk.Label(frame_box, image=self.logo_img)
-            lbl_logo.image = self.logo_img
-            lbl_logo.pack(pady=(0, 10))
+        # Campo Correo
+        ttk.Label(frame_centrado, text="Correo Electrónico:").pack(anchor=tk.W, pady=(10, 2))
+        self.ent_correo = ttk.Entry(frame_centrado, width=35)
+        self.ent_correo.pack(fill=tk.X, pady=(0, 10))
 
-        ttk.Label(frame_box, text="Identificación / Cédula:").pack(anchor="w", pady=(5, 2))
-        self.ent_usuario = ttk.Entry(frame_box, width=30)
-        self.ent_usuario.pack(fill="x", pady=(0, 10))
+        # Campo Contraseña
+        ttk.Label(frame_centrado, text="Contraseña:").pack(anchor=tk.W, pady=(5, 2))
+        self.ent_clave = ttk.Entry(frame_centrado, width=35, show="*")
+        self.ent_clave.pack(fill=tk.X, pady=(0, 15))
 
-        ttk.Label(frame_box, text="Contraseña:").pack(anchor="w", pady=(5, 2))
-        self.ent_clave = ttk.Entry(frame_box, width=30, show="*")
-        self.ent_clave.pack(fill="x", pady=(0, 15))
+        # Evento de tecla Enter
+        self.ent_clave.bind("<Return>", lambda event: self._procesar_login())
 
-        btn_ingresar = ttk.Button(frame_box, text="Iniciar Sesión", command=self._cmd_ingresar)
-        btn_ingresar.pack(fill="x", pady=5)
+        # Botón Ingresar
+        btn_ingresar = ttk.Button(frame_centrado, text="Ingresar", command=self._procesar_login)
+        btn_ingresar.pack(fill=tk.X, pady=10)
 
-    def _cmd_ingresar(self) -> None:
-        usr = self.ent_usuario.get()
-        clave = self.ent_clave.get()
+    def _procesar_login(self) -> None:
+        correo = self.ent_correo.get().strip()
+        clave = self.ent_clave.get().strip()
 
-        exito, msg = self.restaurante_servicio.validar_acceso(usr, clave)
+        if not correo or not clave:
+            messagebox.showwarning("Campos vacíos", "Por favor ingrese el correo y la contraseña.")
+            return
 
-        if exito:
-            messagebox.showinfo("Acceso Autorizado", msg)
-            self.ent_usuario.delete(0, tk.END)
-            self.ent_clave.delete(0, tk.END)
-            self.on_login_success()
+        if self.servicio:
+            usuario = self.servicio.autenticar_usuario(correo, clave)
+            if usuario:
+                try:
+                    self.on_login_success(usuario)
+                except TypeError:
+                    self.on_login_success()
+            else:
+                messagebox.showerror("Error de autenticación", "Correo o contraseña incorrectos.")
         else:
-            messagebox.showwarning("Acceso Denegado", msg)
+            try:
+                self.on_login_success(None)
+            except TypeError:
+                self.on_login_success()

@@ -1,66 +1,76 @@
 import json
-from modelos.producto import Producto
+import os
 from modelos.usuario import Usuario
-from modelos.venta import Venta
 
 class ArchivoServicio:
-    """Servicio encargado de la lectura y escritura de archivos JSON para la aplicación."""
+    """Servicio encargado de la lectura y escritura de archivos JSON."""
 
-    def __init__(self, ruta_productos: str, ruta_usuarios: str, ruta_ventas: str) -> None:
-        self.ruta_productos: str = ruta_productos
-        self.ruta_usuarios: str = ruta_usuarios
-        self.ruta_ventas: str = ruta_ventas
+    def __init__(self, ruta_usuarios: str, ruta_productos: str = "datos/productos.json", ruta_ventas: str = "datos/ventas.json") -> None:
+        self.ruta_usuarios = ruta_usuarios
+        self.ruta_productos = ruta_productos
+        self.ruta_ventas = ruta_ventas
 
-    def guardar_productos(self, lista_productos: list[Producto]) -> bool:
+    def cargar_usuarios(self) -> list:
+        """Carga los usuarios desde el archivo JSON."""
+        if not os.path.exists(self.ruta_usuarios):
+            return []
+
         try:
-            datos = [prod.a_diccionario() for prod in lista_productos]
-            with open(self.ruta_productos, "w", encoding="utf-8") as archivo:
-                json.dump(datos, archivo, indent=4, ensure_ascii=False)
-            return True
-        except Exception:
-            return False
-
-    def cargar_productos(self) -> list[Producto]:
-        productos: list[Producto] = []
-        try:
-            with open(self.ruta_productos, "r", encoding="utf-8") as archivo:
-                contenido = json.load(archivo)
-                for reg in contenido:
-                    if isinstance(reg, dict):
-                        productos.append(Producto.desde_diccionario(reg))
-        except (FileNotFoundError, json.JSONDecodeError):
-            pass
-        return productos
-
-    def cargar_usuarios(self) -> list[Usuario]:
-        usuarios: list[Usuario] = []
-        try:
-            with open(self.ruta_usuarios, "r", encoding="utf-8") as archivo:
-                contenido = json.load(archivo)
-                for reg in contenido:
-                    if isinstance(reg, dict):
+            with open(self.ruta_usuarios, "r", encoding="utf-8") as f:
+                datos = json.load(f)
+                usuarios = []
+                for reg in datos:
+                    if hasattr(Usuario, "from_dict"):
+                        usuarios.append(Usuario.from_dict(reg))
+                    elif hasattr(Usuario, "desde_diccionario"):
                         usuarios.append(Usuario.desde_diccionario(reg))
-        except (FileNotFoundError, json.JSONDecodeError):
-            pass
-        return usuarios
+                    else:
+                        usuarios.append(Usuario(**reg))
+                return usuarios
+        except Exception as e:
+            print(f"Error al cargar usuarios: {e}")
+            return []
 
-    def guardar_ventas(self, lista_ventas: list[Venta]) -> bool:
+    def guardar_usuarios(self, usuarios: list) -> bool:
+        """Guarda la lista de usuarios en el archivo JSON."""
         try:
-            datos = [v.a_diccionario() for v in lista_ventas]
-            with open(self.ruta_ventas, "w", encoding="utf-8") as archivo:
-                json.dump(datos, archivo, indent=4, ensure_ascii=False)
+            datos = []
+            for u in usuarios:
+                if isinstance(u, dict):
+                    datos.append(u)
+                elif hasattr(u, "to_dict"):
+                    datos.append(u.to_dict())
+                else:
+                    datos.append({
+                        "identificacion": getattr(u, "identificacion", ""),
+                        "nombre": getattr(u, "nombre", ""),
+                        "correo": getattr(u, "correo", ""),
+                        "clave": getattr(u, "clave", getattr(u, "contrasena", "")),
+                        "rol": getattr(u, "rol", "Empleado")
+                    })
+
+            os.makedirs(os.path.dirname(self.ruta_usuarios), exist_ok=True)
+            with open(self.ruta_usuarios, "w", encoding="utf-8") as f:
+                json.dump(datos, f, ensure_ascii=False, indent=4)
             return True
-        except Exception:
+        except Exception as e:
+            print(f"Error al guardar usuarios: {e}")
             return False
 
-    def cargar_ventas(self) -> list[Venta]:
-        ventas: list[Venta] = []
+    def cargar_productos(self) -> list:
+        if not os.path.exists(self.ruta_productos):
+            return []
         try:
-            with open(self.ruta_ventas, "r", encoding="utf-8") as archivo:
-                contenido = json.load(archivo)
-                for reg in contenido:
-                    if isinstance(reg, dict):
-                        ventas.append(Venta.desde_diccionario(reg))
-        except (FileNotFoundError, json.JSONDecodeError):
-            pass
-        return ventas
+            with open(self.ruta_productos, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            return []
+
+    def cargar_ventas(self) -> list:
+        if not os.path.exists(self.ruta_ventas):
+            return []
+        try:
+            with open(self.ruta_ventas, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            return []
